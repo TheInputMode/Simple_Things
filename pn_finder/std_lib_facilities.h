@@ -2,7 +2,7 @@
 *						DISCLAIMER
 * 
 *	This file was originally sourced from https://www.stroustrup.com/programming_support.html. 
-*	under "Supporting material:".
+*	under "Supporting code:".
 * 
 *	I edited this file to make it easier for me to read through, and added functions to help
 *	solve problems found in Programming Principles and Practice 2nd Edition.
