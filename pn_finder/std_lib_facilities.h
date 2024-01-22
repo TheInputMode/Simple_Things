@@ -134,7 +134,13 @@ namespace DMath { ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if (temp == number) { // If the number is already an integer, this function shouldn't work... right?
 			return static_cast<UserType>(temp);
 		}
-		return static_cast<UserType>(temp);
+		if (number > temp) {
+			return static_cast<UserType>(temp);
+		}
+		if (temp <= 0) {
+			temp--;
+			return static_cast<UserType>(temp);
+		}
 	}
 
 	/*
@@ -144,7 +150,10 @@ namespace DMath { ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	constexpr UserType ceil(UserType number)
 	{
 		int temp = static_cast<int>(number);
-		if (temp == number) {
+		if (number < 0) {
+			return static_cast<UserType>(temp);
+		}
+		if (temp == number || temp < 0) {
 			return temp;
 		}
 		temp++;
