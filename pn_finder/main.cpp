@@ -43,8 +43,10 @@ int main()
 	std::vector<size_t> primes; // Stored in a vector. Can be written to a file or whatever, but I don't know how to do that :(
 	primes.push_back(2);        // start on 2 because fuck you
 	
-	for (size_t I = 3; I <= end; I += 2) { // this skips the check for even numbers (only example of NOT using ++ I've seen so far)
-		for (size_t II = 0; II < primes.size(); II++) {
+	for (size_t I = 3; I <= end; I += 2) // this skips the check for even numbers (only example of NOT using ++ I've seen so far)
+	{
+		for (size_t II = 0; II < primes.size(); II++)
+		{
 			if (primes[II] > I / 2) {
 				break;
 			}
@@ -66,7 +68,8 @@ int main()
 	const auto time_end{ std::chrono::steady_clock::now() };
 
 	// print those primes
-	for (size_t I = 0; I < primes.size(); I++) {
+	for (size_t I = 0; I < primes.size(); I++)
+	{
 		std::cout << primes[I] << '\n';
 	}
 
