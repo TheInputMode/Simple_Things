@@ -1,8 +1,8 @@
 /*
-*						DISCLAIMER
+*	                                 DISCLAIMER
 * 
 *	This file was originally sourced from https://www.stroustrup.com/programming_support.html. 
-*	under "Supporting code:".
+*	under "Supporting material:".
 * 
 *	I edited this file to make it easier for me to read through, and added functions to help
 *	solve problems found in Programming Principles and Practice 2nd Edition.
@@ -11,10 +11,12 @@
 * 
 *	Some changes won't be documented (mainly because they're too small and insignificant)
 *	and will be acknowledged when a larger change is made to the file.
+* 
+*	I'm at a point where I won't need this file anymore, but I'll keep it around...
 */
 
 /*
-?						std_lib_facilities.h
+?	                           std_lib_facilities.h
 *	
 *	simple "Programming: Principles and Practice using C++ (second edition)" course header to
 *	be used for the first few weeks.
@@ -26,12 +28,6 @@
 *	to understand every concept all at once.
 *	
 *	By Chapter 10, you don't need this file and after Chapter 21, you'll understand it
-*	
-* 
-* NOTE:
-* 
-*	If this changelog gets too massive, put it in a separate .md file for formatting and
-*	readability.
 * 
 * 
 * CHANGELOG:
@@ -51,16 +47,36 @@
 * UNOFFICIAL CHANGES:
 * 
 *	Revised: Jan 20, 2024 - simple reformatting to make reading easier, also removed using namespace std statement
-*							and changed #ifndef directive.
+*	                        and changed #ifndef directive.
 * 
 *	Revised: Jan 21, 2024 - added DMath namespace. DMath will hold math functions not found within the standard
-*							library, or experimental math function redefines. Also commented out the vector #define
-*							inbetween Vector and String structs, I wasn't able to create vector objects because
-*							of it.
+*	                        library, or experimental math function redefines. Also commented out the vector #define
+*	                        in-between Vector and String structs, I wasn't able to create vector objects because
+*	                        of it.
+* 
+*	Revised: Feb 26, 2024 - Removed some functions from DMath, also added pragma warning because I wanted to use /Wall and /WX, and some
+*	                        warnings were unavoidable. I also learned that the "#define vector Vector" macro was supposed to trick me into
+*	                        using the range-checked Vector class... whoops :|
 */
+#pragma once
+#ifndef PPP2__std_lib_facilities__H
+#define PPP2__std_lib_facilities__H
 
-#ifndef PPP__std_lib__H
-#define PPP__std_lib__H
+/*
+*	THESE ARE FOR VISUAL STUDIO 2022, I DON'T KNOW IF THESE WILL WORK WITH ANY OTHER COMPILER? oh well :|
+* 
+*	These are put here to allow use of /Wall with /WX compiler args, raising any warning at the slightest fuck-up, and treating is as an ERROR!
+*	Sometimes, the compiler generates warnings because of something either in this file, or (in the case of C4668), something within the std C++ lib
+*	itself is causing a warning...Totally overkill I know, but anytime I get a warning from the slightest thing, It presents a learning opportunity,
+*	which is always welcome.
+*/
+#pragma warning( disable : 4296 ) // when control always evaluates to false, this warning gets raised, we don't want... DISABLED!
+#pragma warning( disable : 4365 ) // conversion when comparing to ints with different signs/sizes... DISABLED!
+#pragma warning( disable : 4388 ) // sign mis-match when comparing, similar to above I think???
+#pragma warning( disable : 4514 ) // when a function isn't used, compiler removes it, raising a warning just in case... DISABLED!
+#pragma warning( disable : 4668 ) // __STDC_WANT_SECURE_LIB__ causing this one, totally out of my control :(
+#pragma warning( disable : 4820 ) // this one has to do with padding and alignment of memory? I don't know what that means yet. DISABLED!
+#pragma warning( disable : 5045 ) // /Qspectre compiler arg causing this, this can be ignored.
 
 
 #include <iostream>
@@ -83,82 +99,49 @@
 
 
 namespace DMath { ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	/*
-	*	I opted to go with double instead of int even though factorial only operates on
-	*	integers. Now the largest number (besides inf, if you accept that) that can be
-	*	represented is 170!.
-	*
-	*	This function should only take integers, double is used for the range, show
-	*	error for input of double, but still calculate the result.
-	*
-	* USAGE:
-	*	DMath::factorial(5.0);
-	* or
-	*	double variable = DMath::factorial(5.5) <- this will truncate, but works
-	*
-	*/
-	double factorial(double factoriand)
-	{
-		if (factoriand == 0) { /// Math says so, so I say so. :|
-			return 1.0;
-		}
-		if (factoriand < 0) {
-			std::cerr
-				<< "[ERROR] Factorial operating on negative number...\n\a";
-			return NAN;
-		}
-		double result = static_cast<int>(factoriand); // cast to truncate these variables
-		double temp = static_cast<int>(factoriand);
-		if (result != factoriand) {
-			std::cerr
-				<< "[WARNING] Using floating-point type on factorial operator...\n"
-				<< "          Truncation will occur!\n\a";
-		}
-		for (int i = 1; i < static_cast<int>(factoriand); i++) {
-			result *= temp - 1;
-			temp--;
-		}
-		return result;
+/*
+*	I opted to go with double instead of int even though factorial only operates on
+*	integers. Now the largest number (besides inf, if you accept that) that can be
+*	represented is 170!.
+*
+*	This function should only take integers, double is used for the range, show
+*	error for input of double, but still calculate the result.
+*
+* USAGE:
+*	DMath::factorial(5.0);
+* or
+*	double variable = DMath::factorial(5.5) <- this will truncate, but works
+*
+*/
+double factorial(double factoriand)
+{
+	if (factoriand == 0) { /// Math says so, so I say so. :|
+		return 1.0;
 	}
-
-	/*
-	*	Floor function that casts number to int then returns it, effectively
-	*	flooring the number.
-	*	Is this good? I don't know :|
-	*/
-	template <typename UserType>
-	constexpr UserType floor(UserType number)
-	{
-		int temp = static_cast<int>(number);
-		if (temp == number) { // If the number is already an integer, this function shouldn't work... right?
-			return static_cast<UserType>(temp);
-		}
-		if (number > temp) {
-			return static_cast<UserType>(temp);
-		}
-		if (temp <= 0) {
-			temp--;
-			return static_cast<UserType>(temp);
-		}
+	if (factoriand < 0) {
+		std::cerr
+			<< "[ERROR] Factorial operating on negative number...\n\a";
+		return NAN;
 	}
-
-	/*
-	*	Check above...
-	*/
-	template <typename UserType>
-	constexpr UserType ceil(UserType number)
-	{
-		int temp = static_cast<int>(number);
-		if (number < 0) {
-			return static_cast<UserType>(temp);
-		}
-		if (temp == number || temp < 0) {
-			return temp;
-		}
-		temp++;
-		return static_cast<UserType>(temp);
+	double result = static_cast<int>(factoriand); // cast to truncate these variables
+	double temp   = static_cast<int>(factoriand);
+	if (result != factoriand) {
+		std::cerr
+			<< "[WARNING] Using floating-point type on factorial operator...\n"
+			<< "          Truncation will occur!\n\a";
 	}
+		
+	/*
+	*	After all that setup, this is the entire algorithm for factorial...
+	*	can this even be called an "algorithm"?
+	*/
+	for (int i = 1; i < static_cast<int>(factoriand); i++) {
+		result *= temp - 1;
+		temp--;
+	}
+	return result;
+}
+
 
 }///namespace DMath ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -206,7 +189,7 @@ struct Vector : public std::vector<T>
 };
 
 // disgusting macro hack to get a range checked vector:
-//#define vector Vector										// was this even necessary?
+//#define vector Vector										// was this even necessary? | feb 26, 2024: yes...
 
 // trivially range-checked string (no iterator checking):
 struct String : std::string
@@ -271,7 +254,8 @@ inline void error(const std::string& s, int i)
 }
 
 
-template<class T> char* as_bytes(T& i)	// needed for binary I/O
+template<class T>
+char* as_bytes(T& i)	// needed for binary I/O
 {
 	void* addr = &i;	// get the address of the first byte of memory used to store the object
 	return static_cast<char*>(addr); // treat that memory as bytes
@@ -380,4 +364,4 @@ Iterator<C> find_if(C& c, Pred p)
 	return std::find_if(c.begin(), c.end(), p);
 }
 
-#endif //PPP__std_lib__H
+#endif //PPP2__std_lib_facilities__H
